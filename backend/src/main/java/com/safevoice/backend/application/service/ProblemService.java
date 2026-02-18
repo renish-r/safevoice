@@ -11,7 +11,7 @@ import com.safevoice.backend.infrastructure.exception.ResourceNotFoundException;
 import com.safevoice.backend.infrastructure.exception.ValidationException;
 import com.safevoice.backend.infrastructure.http.AIServiceClient;
 import com.safevoice.backend.infrastructure.image.ImageProcessingService;
-import com.safevoice.backend.infrastructure.storage.S3StorageService;
+import com.safevoice.backend.infrastructure.storage.SupabaseStorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
-    private final S3StorageService s3StorageService;
+    private final SupabaseStorageService storageService;
     private final ImageProcessingService imageProcessingService;
     private final AIServiceClient aiServiceClient;
 
@@ -38,11 +38,11 @@ public class ProblemService {
 
     public ProblemService(
             ProblemRepository problemRepository,
-            S3StorageService s3StorageService,
+            SupabaseStorageService storageService,
             ImageProcessingService imageProcessingService,
             AIServiceClient aiServiceClient) {
         this.problemRepository = problemRepository;
-        this.s3StorageService = s3StorageService;
+        this.storageService = storageService;
         this.imageProcessingService = imageProcessingService;
         this.aiServiceClient = aiServiceClient;
     }
@@ -70,8 +70,8 @@ public class ProblemService {
             throw new ValidationException("Content rejected due to moderation policy violation");
         }
 
-        // Upload image to S3
-        String imageUrl = s3StorageService.uploadImage(request.getImageFile(), "problems");
+        // Upload image to Supabase Storage
+        String imageUrl = storageService.uploadImage(request.getImageFile(), "problems");
 
         // Save problem to database
         Problem problem = Problem.builder()

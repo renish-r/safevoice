@@ -1,4 +1,4 @@
-FROM maven:3.9.0-eclipse-temurin-17-alpine AS builder
+FROM maven:3.9.0-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
@@ -9,15 +9,13 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
 COPY --from=builder /app/target/*.jar app.jar
 
+ENV PORT=8080
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:8080/health || exit 1
-
-CMD ["java", "-jar", "app.jar"]
+CMD ["sh", "-c", "java -Dserver.port=${PORT} -jar app.jar"]

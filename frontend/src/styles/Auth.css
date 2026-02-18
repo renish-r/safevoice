@@ -7,10 +7,11 @@
 }
 
 .auth-card {
-  background: white;
+  background: var(--surface);
   padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   width: 100%;
   max-width: 400px;
 }
@@ -18,7 +19,7 @@
 .auth-card h2 {
   margin-bottom: 30px;
   text-align: center;
-  color: #333;
+  color: var(--text);
 }
 
 .register-card {
@@ -28,12 +29,12 @@
 .auth-link {
   text-align: center;
   margin-top: 20px;
-  color: #666;
+  color: var(--muted);
   font-size: 14px;
 }
 
 .auth-link a {
-  color: #007bff;
+  color: var(--accent);
   text-decoration: none;
   font-weight: 600;
 }
@@ -45,8 +46,36 @@
 .form-group small {
   display: block;
   font-size: 12px;
-  color: #666;
+  color: var(--muted);
   margin-top: 4px;
+}
+
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  padding-right: 44px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+.toggle-password:hover {
+  color: var(--accent);
+  background: rgba(109, 93, 252, 0.12);
 }
 
 @media (max-width: 768px) {

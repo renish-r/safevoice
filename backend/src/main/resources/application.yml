@@ -3,9 +3,9 @@ spring:
     name: safevoice-backend
 
   datasource:
-    url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
-    username: postgres.izkepikwxpfeidgnbzot
-    password: Renish@2005@SafeVoice
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -13,7 +13,6 @@ spring:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         use_sql_comments: true
 
@@ -21,15 +20,13 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
-aws:
-  s3:
-    bucket-name: safevoice-issues
-    region: ${AWS_REGION:us-east-1}
-    access-key: ${AWS_ACCESS_KEY:}
-    secret-key: ${AWS_SECRET_KEY:}
+supabase:
+  url: ${SUPABASE_URL}
+  bucket-name: ${SUPABASE_BUCKET:safevoice-issues}
+  service-key: ${SUPABASE_SERVICE_KEY}
 
 jwt:
-  secret: ${JWT_SECRET:your_super_secret_jwt_key_change_in_production}
+  secret: ${JWT_SECRET}
   expiration: 86400000
 
 ai:
@@ -46,10 +43,8 @@ logging:
   level:
     root: INFO
     com.safevoice: DEBUG
-    org.springframework.security: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
     name: logs/safevoice.log
     max-size: 10MB

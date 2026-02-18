@@ -7,30 +7,32 @@
 }
 
 .upload-container {
-  background: white;
+  background: var(--surface);
   padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   max-width: 600px;
   margin: 0 auto;
 }
 
 .upload-container h2 {
   margin-bottom: 10px;
-  color: #333;
+  color: var(--text);
 }
 
 .subtitle {
-  color: #666;
+  color: var(--muted);
   margin-bottom: 30px;
   font-size: 14px;
 }
 
 .file-input {
-  padding: 10px;
-  border: 2px dashed #ddd;
-  border-radius: 4px;
+  padding: 12px;
+  border: 2px dashed var(--border);
+  border-radius: 12px;
   cursor: pointer;
+  background: var(--surface-2);
 }
 
 .location-group {
@@ -38,15 +40,17 @@
 }
 
 .btn-location {
-  background-color: #28a745;
+  background: linear-gradient(135deg, #2dd4bf 0%, #0f766e 100%);
   color: white;
   padding: 10px 20px;
   margin-top: 10px;
   margin-bottom: 15px;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
 }
 
 .btn-location:hover {
-  background-color: #218838;
+  filter: brightness(1.08);
 }
 
 .coordinates {
@@ -63,22 +67,26 @@
 .coordinates label {
   margin-bottom: 5px;
   font-weight: 600;
+  color: var(--muted);
 }
 
 .coordinates input {
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
 }
 
 .privacy-note {
   margin-top: 20px;
   padding: 15px;
-  background-color: #f0f0f0;
-  border-radius: 4px;
+  background-color: var(--surface-2);
+  border-radius: 12px;
   font-size: 13px;
-  color: #666;
+  color: var(--muted);
   line-height: 1.6;
+  border: 1px solid var(--border);
 }
 
 @media (max-width: 768px) {

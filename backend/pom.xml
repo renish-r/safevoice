@@ -22,7 +22,6 @@
 
     <properties>
         <java.version>17</java.version>
-        <aws-java-sdk.version>2.20.0</aws-java-sdk.version>
         <jjwt.version>0.11.5</jjwt.version>
     </properties>
 
@@ -72,13 +71,6 @@
             <artifactId>jjwt-jackson</artifactId>
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
-        </dependency>
-
-        <!-- AWS S3 -->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>s3</artifactId>
-            <version>${aws-java-sdk.version}</version>
         </dependency>
 
         <!-- Image Processing -->

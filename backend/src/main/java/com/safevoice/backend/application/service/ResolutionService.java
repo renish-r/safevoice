@@ -11,7 +11,7 @@ import com.safevoice.backend.infrastructure.exception.ExternalServiceException;
 import com.safevoice.backend.infrastructure.exception.ResourceNotFoundException;
 import com.safevoice.backend.infrastructure.http.AIServiceClient;
 import com.safevoice.backend.infrastructure.image.ImageProcessingService;
-import com.safevoice.backend.infrastructure.storage.S3StorageService;
+import com.safevoice.backend.infrastructure.storage.SupabaseStorageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class ResolutionService {
 
     private final ResolutionRepository resolutionRepository;
     private final ProblemRepository problemRepository;
-    private final S3StorageService s3StorageService;
+    private final SupabaseStorageService storageService;
     private final ImageProcessingService imageProcessingService;
     private final AIServiceClient aiServiceClient;
 
@@ -37,12 +37,12 @@ public class ResolutionService {
     public ResolutionService(
             ResolutionRepository resolutionRepository,
             ProblemRepository problemRepository,
-            S3StorageService s3StorageService,
+            SupabaseStorageService storageService,
             ImageProcessingService imageProcessingService,
             AIServiceClient aiServiceClient) {
         this.resolutionRepository = resolutionRepository;
         this.problemRepository = problemRepository;
-        this.s3StorageService = s3StorageService;
+        this.storageService = storageService;
         this.imageProcessingService = imageProcessingService;
         this.aiServiceClient = aiServiceClient;
     }
@@ -57,7 +57,7 @@ public class ResolutionService {
         Problem problem = problemRepository.findById(problemId)
             .orElseThrow(() -> new ResourceNotFoundException("Problem not found with ID: " + problemId));
 
-        // Download original image from S3
+        // Download original image from storage
         MultipartFile originalImageFile = downloadImageFromUrl(problem.getImageUrl());
 
         // Call AI Verification Service
@@ -69,8 +69,8 @@ public class ResolutionService {
             verificationResult.getDeepfakeDetected(),
             verificationResult.getVerificationStatus());
 
-        // Upload resolved image to S3
-        String resolvedImageUrl = s3StorageService.uploadImage(resolvedImage, "resolutions");
+        // Upload resolved image to Supabase Storage
+        String resolvedImageUrl = storageService.uploadImage(resolvedImage, "resolutions");
 
         // Determine verification status
         Resolution.VerificationStatus status;
@@ -104,7 +104,7 @@ public class ResolutionService {
     }
 
     private MultipartFile downloadImageFromUrl(String imageUrl) {
-        // In a production system, implement proper S3 download or convert URL to MultipartFile
+        // In a production system, implement proper storage download or convert URL to MultipartFile
         // For now, this is a placeholder
         throw new ExternalServiceException("Image download not yet implemented");
     }
