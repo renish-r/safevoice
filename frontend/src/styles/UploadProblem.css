@@ -1,0 +1,96 @@
+.upload-problem {
+  flex: 1;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.upload-container {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.upload-container h2 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.file-input {
+  padding: 10px;
+  border: 2px dashed #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.location-group {
+  margin-bottom: 30px;
+}
+
+.btn-location {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 20px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.btn-location:hover {
+  background-color: #218838;
+}
+
+.coordinates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+.coordinates div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coordinates label {
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.coordinates input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.privacy-note {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f0f0f0;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .upload-problem {
+    padding: 20px;
+  }
+
+  .upload-container {
+    padding: 20px;
+  }
+
+  .coordinates {
+    grid-template-columns: 1fr;
+  }
+}

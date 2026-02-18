@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: safevoice-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/safevoice_db
+    username: safevoice_user
+    password: secure_password_123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        use_sql_comments: true
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+aws:
+  s3:
+    bucket-name: safevoice-issues
+    region: us-east-1
+    access-key: ${AWS_ACCESS_KEY}
+    secret-key: ${AWS_SECRET_KEY}
+
+jwt:
+  secret: ${JWT_SECRET:your_super_secret_jwt_key_change_in_production}
+  expiration: 86400000
+
+ai:
+  service:
+    moderation-url: http://localhost:8001/api/ai/moderate
+    verification-url: http://localhost:8001/api/ai/verify
+    timeout-seconds: 30
+
+rate-limiting:
+  requests-per-minute: 30
+  requests-per-hour: 500
+
+logging:
+  level:
+    root: INFO
+    com.safevoice: DEBUG
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/safevoice.log
+    max-size: 10MB
+    max-history: 10
