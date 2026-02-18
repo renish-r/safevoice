@@ -44,9 +44,8 @@ public class JwtTokenProvider {
     public String getEmailFromToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
-        Claims claims = Jwts.parserBuilder()
+        Claims claims = Jwts.parser()
             .setSigningKey(key)
-            .build()
             .parseClaimsJws(token)
             .getBody();
 
@@ -56,9 +55,8 @@ public class JwtTokenProvider {
     public String getRoleFromToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
-        Claims claims = Jwts.parserBuilder()
+        Claims claims = Jwts.parser()
             .setSigningKey(key)
-            .build()
             .parseClaimsJws(token)
             .getBody();
 
@@ -69,9 +67,8 @@ public class JwtTokenProvider {
         try {
             SecretKey key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
-            Jwts.parserBuilder()
+            Jwts.parser()
                 .setSigningKey(key)
-                .build()
                 .parseClaimsJws(token);
 
             return true;

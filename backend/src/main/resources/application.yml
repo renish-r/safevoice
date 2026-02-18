@@ -3,14 +3,14 @@ spring:
     name: safevoice-backend
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/safevoice_db
-    username: safevoice_user
-    password: secure_password_123
+    url: jdbc:postgresql://aws-1-ap-northeast-2.pooler.supabase.com:5432/postgres
+    username: postgres.izkepikwxpfeidgnbzot
+    password: Renish@2005@SafeVoice
     driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -24,9 +24,9 @@ spring:
 aws:
   s3:
     bucket-name: safevoice-issues
-    region: us-east-1
-    access-key: ${AWS_ACCESS_KEY}
-    secret-key: ${AWS_SECRET_KEY}
+    region: ${AWS_REGION:us-east-1}
+    access-key: ${AWS_ACCESS_KEY:}
+    secret-key: ${AWS_SECRET_KEY:}
 
 jwt:
   secret: ${JWT_SECRET:your_super_secret_jwt_key_change_in_production}
