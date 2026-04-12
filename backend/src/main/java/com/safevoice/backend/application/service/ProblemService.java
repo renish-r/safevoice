@@ -33,7 +33,7 @@ public class ProblemService {
     private final ImageProcessingService imageProcessingService;
     private final AIServiceClient aiServiceClient;
 
-    @Value("${ai.service.moderation-threshold:0.8}")
+    @Value("${ai.service.moderation-threshold:0.45}")
     private Double moderationThreshold;
 
     public ProblemService(
@@ -57,17 +57,32 @@ public class ProblemService {
         byte[] cleanImageData = imageProcessingService.removeExifMetadata(request.getImageFile());
 
         // Call AI Moderation Service
-        AIModerationResponse moderationResult = aiServiceClient.callModerationService(request.getImageFile());
+        AIModerationResponse moderationResult;
+        try {
+            moderationResult = aiServiceClient.callModerationService(request.getImageFile());
+            log.info("Moderation result - NSFW: {}, Violence: {}, OCR: {}, Confidence: {}",
+                moderationResult.getNsfwScore(),
+                moderationResult.getViolenceScore(),
+                moderationResult.getOcrFlag(),
+                moderationResult.getFinalConfidence());
 
-        log.info("Moderation result - NSFW: {}, Violence: {}, Confidence: {}",
-            moderationResult.getNsfwScore(),
-            moderationResult.getViolenceScore(),
-            moderationResult.getFinalConfidence());
+            // Block if any signal exceeds threshold or OCR flag is true
+            boolean unsafeContent = Boolean.TRUE.equals(moderationResult.getOcrFlag())
+                || moderationResult.getNsfwScore() > moderationThreshold
+                || moderationResult.getViolenceScore() > moderationThreshold
+                || moderationResult.getFinalConfidence() > moderationThreshold;
 
-        // Check if moderation confidence exceeds threshold
-        if (moderationResult.getFinalConfidence() > moderationThreshold) {
-            log.warn("Problem rejected due to high moderation confidence: {}", moderationResult.getFinalConfidence());
-            throw new ValidationException("Content rejected due to moderation policy violation");
+            if (unsafeContent) {
+                log.warn("Problem rejected due to unsafe content. NSFW: {}, Violence: {}, OCR: {}, Confidence: {}",
+                    moderationResult.getNsfwScore(),
+                    moderationResult.getViolenceScore(),
+                    moderationResult.getOcrFlag(),
+                    moderationResult.getFinalConfidence());
+                throw new ValidationException("Content rejected due to moderation policy violation");
+            }
+        } catch (ExternalServiceException e) {
+            log.error("AI moderation service unavailable. Upload blocked for safety: {}", e.getMessage());
+            throw e;
         }
 
         // Upload image to Supabase Storage

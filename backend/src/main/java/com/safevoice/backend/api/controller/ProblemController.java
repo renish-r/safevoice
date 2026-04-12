@@ -3,8 +3,10 @@ package com.safevoice.backend.api.controller;
 import com.safevoice.backend.api.dto.CreateProblemRequest;
 import com.safevoice.backend.api.dto.ProblemPageResponse;
 import com.safevoice.backend.api.dto.ProblemResponse;
+import com.safevoice.backend.api.dto.ResolvedPostResponse;
 import com.safevoice.backend.api.dto.UpdateProblemStatusRequest;
 import com.safevoice.backend.application.service.ProblemService;
+import com.safevoice.backend.application.service.ResolutionService;
 import com.safevoice.backend.domain.entity.Problem;
 import com.safevoice.backend.infrastructure.security.RateLimitingService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,16 +26,18 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/problems")
-@CrossOrigin(origins = "*")
 public class ProblemController {
 
     private final ProblemService problemService;
+    private final ResolutionService resolutionService;
     private final RateLimitingService rateLimitingService;
 
     public ProblemController(
             ProblemService problemService,
+            ResolutionService resolutionService,
             RateLimitingService rateLimitingService) {
         this.problemService = problemService;
+        this.resolutionService = resolutionService;
         this.rateLimitingService = rateLimitingService;
     }
 
@@ -72,6 +77,15 @@ public class ProblemController {
         log.info("Fetching problem with ID: {}", id);
         ProblemResponse response = problemService.getProblemById(id);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/resolved")
+    public ResponseEntity<Page<ResolvedPostResponse>> getResolvedPosts(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Fetching resolved posts: page={}, size={}", page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(resolutionService.getResolvedPosts(pageable));
     }
 
     @PutMapping("/{id}/status")

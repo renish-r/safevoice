@@ -32,11 +32,23 @@ public class Resolution {
     @Column(nullable = false)
     private String resolvedImageUrl;
 
+    @Column(columnDefinition = "TEXT")
+    private String officialDescription;
+
+    @Column
+    private Double officialLatitude;
+
+    @Column
+    private Double officialLongitude;
+
     @Column(nullable = false)
     private Double aiSimilarityScore;
 
     @Column(nullable = false)
     private Boolean deepfakeDetected;
+
+    @Column(columnDefinition = "TEXT")
+    private String verificationReason;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

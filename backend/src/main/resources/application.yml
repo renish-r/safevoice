@@ -7,6 +7,12 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
+      idle-timeout: 10000
+      max-lifetime: 30000
+      connection-timeout: 20000
 
   jpa:
     hibernate:
@@ -31,9 +37,19 @@ jwt:
 
 ai:
   service:
-    moderation-url: http://localhost:8001/api/ai/moderate
-    verification-url: http://localhost:8001/api/ai/verify
-    timeout-seconds: 30
+    moderation-url: ${AI_MODERATION_URL:http://localhost:8001/api/ai/moderate}
+    moderation-threshold: ${AI_MODERATION_THRESHOLD:0.45}
+    verification-url: ${AI_VERIFICATION_URL:http://localhost:8001/api/ai/verify}
+    verification-threshold: ${AI_VERIFICATION_THRESHOLD:0.60}
+    timeout-seconds: ${AI_TIMEOUT_SECONDS:30}
+
+resolution:
+  moderation:
+    threshold: ${RESOLUTION_MODERATION_THRESHOLD:0.65}
+  verification:
+    max-similarity: ${RESOLUTION_MAX_SIMILARITY:0.97}
+    max-distance-km: ${RESOLUTION_MAX_DISTANCE_KM:2.0}
+    description-min-jaccard: ${RESOLUTION_MIN_DESCRIPTION_JACCARD:0.35}
 
 rate-limiting:
   requests-per-minute: 30

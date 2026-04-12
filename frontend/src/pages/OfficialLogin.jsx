@@ -29,6 +29,10 @@ function OfficialLogin() {
       const response = await authService.login(formData.email, formData.password);
       localStorage.setItem('accessToken', response.data.accessToken);
 
+      // Dispatch event to notify Header component
+      window.dispatchEvent(new Event('auth-state-changed'));
+      window.dispatchEvent(new Event('login-success'));
+
       navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');

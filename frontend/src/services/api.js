@@ -18,6 +18,10 @@ export const problemService = {
   updateProblemStatus: (id, status) => {
     return apiClient.put(`/api/problems/${id}/status`, { status });
   },
+
+  getResolvedPosts: (page = 0, size = 10) => {
+    return apiClient.get(`/api/problems/resolved?page=${page}&size=${size}`);
+  },
 };
 
 export const authService = {
@@ -29,16 +33,24 @@ export const authService = {
     return apiClient.post('/api/auth/login', { email, password });
   },
 
+  getCurrentUser: () => {
+    return apiClient.get('/api/auth/me');
+  },
+
   logout: () => {
     localStorage.removeItem('accessToken');
+    window.dispatchEvent(new Event('auth-state-changed'));
   },
 };
 
 export const officialService = {
-  uploadResolution: (problemId, imageFile) => {
+  uploadResolution: (problemId, imageFile, description, latitude, longitude) => {
     const formData = new FormData();
     formData.append('problemId', problemId);
     formData.append('resolvedImageFile', imageFile);
+    formData.append('description', description);
+    formData.append('latitude', latitude);
+    formData.append('longitude', longitude);
 
     return apiClient.post('/api/official/resolutions', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },

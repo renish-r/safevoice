@@ -19,8 +19,12 @@ public class ResolutionResponse {
     private UUID problemId;
     private UUID officialId;
     private String resolvedImageUrl;
+    private String officialDescription;
+    private Double officialLatitude;
+    private Double officialLongitude;
     private Double aiSimilarityScore;
     private Boolean deepfakeDetected;
     private Resolution.VerificationStatus verificationStatus;
+    private String verificationReason;
     private LocalDateTime createdAt;
 }

@@ -2,15 +2,20 @@ package com.safevoice.backend.application.service;
 
 import com.safevoice.backend.api.dto.AuthResponse;
 import com.safevoice.backend.api.dto.LoginRequest;
+import com.safevoice.backend.api.dto.OfficialProfileResponse;
 import com.safevoice.backend.api.dto.OfficialRegisterRequest;
 import com.safevoice.backend.domain.entity.Official;
 import com.safevoice.backend.domain.repository.OfficialRepository;
+import com.safevoice.backend.infrastructure.exception.ResourceNotFoundException;
 import com.safevoice.backend.infrastructure.exception.ValidationException;
 import com.safevoice.backend.infrastructure.security.JwtTokenProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -96,5 +101,20 @@ public class OfficialAuthService {
     public Official getOfficialByEmail(String email) {
         return officialRepository.findByEmail(email)
             .orElseThrow(() -> new ValidationException("Official not found"));
+    }
+
+    public List<OfficialProfileResponse> getAllOfficials() {
+        return officialRepository.findAll().stream()
+            .map(OfficialProfileResponse::from)
+            .toList();
+    }
+
+    public OfficialProfileResponse updateOfficialVerification(UUID officialId, boolean verified) {
+        Official official = officialRepository.findById(officialId)
+            .orElseThrow(() -> new ResourceNotFoundException("Official not found with ID: " + officialId));
+
+        official.setIsVerified(verified);
+        Official savedOfficial = officialRepository.save(official);
+        return OfficialProfileResponse.from(savedOfficial);
     }
 }

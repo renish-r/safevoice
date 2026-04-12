@@ -10,6 +10,9 @@ function OfficialDashboard() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [resolutionImage, setResolutionImage] = useState(null);
+  const [resolutionDescription, setResolutionDescription] = useState('');
+  const [officialLatitude, setOfficialLatitude] = useState('');
+  const [officialLongitude, setOfficialLongitude] = useState('');
 
   const isLoggedIn = localStorage.getItem('accessToken');
 
@@ -28,7 +31,10 @@ function OfficialDashboard() {
     try {
       setLoading(true);
       const response = await problemService.getProblems(0, 50);
-      setProblems(response.data.content);
+      const pendingProblems = (response.data.content || []).filter(
+        (problem) => problem.status === 'OPEN' || problem.status === 'UNDER_REVIEW'
+      );
+      setProblems(pendingProblems);
     } catch (err) {
       setError('Failed to load problems');
     } finally {
@@ -44,12 +50,40 @@ function OfficialDashboard() {
       return;
     }
 
+    if (!resolutionDescription.trim()) {
+      setError('Please add resolution description');
+      return;
+    }
+
+    if (!officialLatitude || !officialLongitude) {
+      setError('Please provide your current location');
+      return;
+    }
+
     try {
       setLoading(true);
-      await officialService.uploadResolution(selectedProblem.id, resolutionImage);
+      setError('');
+      setSuccess('');
+      const response = await officialService.uploadResolution(
+        selectedProblem.id,
+        resolutionImage,
+        resolutionDescription,
+        officialLatitude,
+        officialLongitude
+      );
 
-      setSuccess('Resolution uploaded and verified!');
+      const status = response.data?.verificationStatus;
+      const reason = response.data?.verificationReason;
+
+      if (status === 'VERIFIED') {
+        setSuccess('Resolution uploaded and verified!');
+      } else {
+        setError(reason || 'Resolution rejected by verification checks');
+      }
       setResolutionImage(null);
+      setResolutionDescription('');
+      setOfficialLatitude('');
+      setOfficialLongitude('');
       setSelectedProblem(null);
       fetchProblems();
     } catch (err) {
@@ -57,6 +91,21 @@ function OfficialDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation not supported');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setOfficialLatitude(position.coords.latitude.toString());
+        setOfficialLongitude(position.coords.longitude.toString());
+      },
+      () => setError('Failed to fetch location')
+    );
   };
 
   return (
@@ -105,6 +154,46 @@ function OfficialDashboard() {
                     id="resolutionImage"
                     accept="image/*"
                     onChange={(e) => setResolutionImage(e.target.files[0])}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="resolutionDescription">Resolution Description</label>
+                  <textarea
+                    id="resolutionDescription"
+                    value={resolutionDescription}
+                    onChange={(e) => setResolutionDescription(e.target.value)}
+                    placeholder="Explain what was fixed and current status"
+                    minLength={10}
+                    maxLength={1000}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <button type="button" className="btn-submit" onClick={handleGetLocation}>
+                    Use Current Location
+                  </button>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="officialLatitude">Latitude</label>
+                  <input
+                    type="number"
+                    id="officialLatitude"
+                    value={officialLatitude}
+                    onChange={(e) => setOfficialLatitude(e.target.value)}
+                    step="any"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="officialLongitude">Longitude</label>
+                  <input
+                    type="number"
+                    id="officialLongitude"
+                    value={officialLongitude}
+                    onChange={(e) => setOfficialLongitude(e.target.value)}
+                    step="any"
                   />
                 </div>
 

@@ -53,16 +53,26 @@
 .password-field {
   position: relative;
   display: flex;
+  flex-direction: column;
+}
+
+.password-input-wrapper {
+  position: relative;
+  display: flex;
   align-items: center;
+  width: 100%;
 }
 
 .password-field input {
+  width: 100%;
   padding-right: 44px;
 }
 
 .toggle-password {
   position: absolute;
-  right: 10px;
+  right: 12px;
+  bottom: 0px;
+  top: 0px;
   background: transparent;
   border: none;
   color: var(--muted);
@@ -70,12 +80,18 @@
   align-items: center;
   justify-content: center;
   padding: 6px;
-  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .toggle-password:hover {
   color: var(--accent);
   background: rgba(109, 93, 252, 0.12);
+  border-radius: 6px;
+}
+
+.toggle-password:active {
+  transform: scale(0.95);
 }
 
 @media (max-width: 768px) {

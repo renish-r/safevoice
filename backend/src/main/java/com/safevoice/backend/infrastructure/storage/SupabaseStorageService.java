@@ -14,11 +14,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SupabaseStorageService {
+    private static final Pattern UNSAFE_FILENAME_CHARS = Pattern.compile("[^a-zA-Z0-9._-]");
 
     @Value("${supabase.url}")
     private String supabaseUrl;
@@ -33,7 +35,7 @@ public class SupabaseStorageService {
 
     public String uploadImage(MultipartFile file, String folderPrefix) {
         try {
-            String safeName = file.getOriginalFilename() == null ? "upload" : file.getOriginalFilename();
+            String safeName = sanitizeFileName(file.getOriginalFilename());
             String fileName = folderPrefix + "/" + UUID.randomUUID() + "_" + safeName;
             String uploadUrl = supabaseUrl + "/storage/v1/object/" + bucketName + "/" + fileName;
 
@@ -51,10 +53,20 @@ public class SupabaseStorageService {
                 throw new RuntimeException("Supabase upload failed with status " + response.getStatusCode());
             }
 
-            return supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
+            // Construct the public URL for accessing the uploaded image
+            String publicUrl = supabaseUrl + "/storage/v1/object/public/" + bucketName + "/" + fileName;
+            log.info("Image uploaded successfully: {}", publicUrl);
+            return publicUrl;
         } catch (IOException ex) {
             log.error("Error uploading file to Supabase", ex);
             throw new RuntimeException("Failed to upload file to Supabase", ex);
         }
+    }
+
+    private String sanitizeFileName(String originalFilename) {
+        String value = (originalFilename == null || originalFilename.isBlank()) ? "upload" : originalFilename.trim();
+        value = value.replace("\\", "_").replace("/", "_");
+        value = UNSAFE_FILENAME_CHARS.matcher(value).replaceAll("_");
+        return value;
     }
 }

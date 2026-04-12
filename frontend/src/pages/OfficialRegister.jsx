@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import { authService } from '../services/api';
 import '../styles/Auth.css';
 
@@ -8,10 +9,13 @@ function OfficialRegister() {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    confirmPassword: '',
     fullName: '',
     officialIdNumber: '',
     department: '',
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -21,14 +25,29 @@ function OfficialRegister() {
     setFormData({ ...formData, [name]: value });
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
 
     try {
       setLoading(true);
       setError('');
 
-      await authService.register(formData);
+      // Remove confirmPassword before sending to API
+      const { confirmPassword, ...dataToSend } = formData;
+      await authService.register(dataToSend);
       setSuccess('Registration successful! Please wait for admin verification.');
 
       setTimeout(() => {
@@ -58,6 +77,7 @@ function OfficialRegister() {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
+              autoComplete="username"
               required
             />
           </div>
@@ -104,18 +124,56 @@ function OfficialRegister() {
             </select>
           </div>
 
-          <div className="form-group">
+          <div className="form-group password-field">
             <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              minLength="8"
-              required
-            />
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                name="password"
+                value={formData.password}
+                onChange={handleInputChange}
+                minLength="8"
+                autoComplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="toggle-password"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              </button>
+            </div>
             <small>Minimum 8 characters</small>
+          </div>
+
+          <div className="form-group password-field">
+            <label htmlFor="confirmPassword">Confirm Password</label>
+            <div className="password-input-wrapper">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                id="confirmPassword"
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleInputChange}
+                minLength="8"
+                autoComplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                onClick={toggleConfirmPasswordVisibility}
+                className="toggle-password"
+                aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+              >
+                {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+              </button>
+            </div>
+            {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
+              <small style={{ color: 'var(--danger)' }}>Passwords do not match</small>
+            )}
           </div>
 
           <button type="submit" className="btn-submit" disabled={loading}>
